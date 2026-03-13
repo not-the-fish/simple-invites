@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { adminApi, setAuthToken } from '../../services/admin'
+import { getErrorResponse } from '../../services/api'
 import type { RSVPSubmission } from '../../types/rsvp'
 
 export const RSVPsPage = () => {
@@ -10,26 +11,14 @@ export const RSVPsPage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const token = localStorage.getItem('admin_token')
-    if (token) {
-      setAuthToken(token)
-    } else {
-      navigate('/admin/login')
-      return
-    }
-
-    if (eventId) {
-      loadRSVPs()
-    }
-  }, [eventId, navigate])
-
-  const loadRSVPs = async () => {
+  const loadRSVPs = useCallback(async () => {
+    if (!eventId) return
     try {
       const data = await adminApi.getEventRSVPs(Number(eventId))
       setRsvps(data)
-    } catch (err: any) {
-      if (err.response?.status === 401) {
+    } catch (err: unknown) {
+      const { status } = getErrorResponse(err)
+      if (status === 401) {
         localStorage.removeItem('admin_token')
         navigate('/admin/login')
       } else {
@@ -38,7 +27,17 @@ export const RSVPsPage = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [eventId, navigate])
+
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token')
+    if (token) {
+      setAuthToken(token)
+      if (eventId) loadRSVPs()
+    } else {
+      navigate('/admin/login')
+    }
+  }, [eventId, navigate, loadRSVPs])
 
   const getResponseColor = (response: string) => {
     switch (response) {
@@ -67,8 +66,9 @@ export const RSVPsPage = () => {
     try {
       await adminApi.deleteRSVP(Number(eventId), rsvpId)
       setRsvps(rsvps.filter((r) => r.id !== rsvpId))
-    } catch (err: any) {
-      if (err.response?.status === 401) {
+    } catch (err: unknown) {
+      const { status } = getErrorResponse(err)
+      if (status === 401) {
         localStorage.removeItem('admin_token')
         navigate('/admin/login')
       } else {

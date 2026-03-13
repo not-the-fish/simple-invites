@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { eventsApi } from '../../services/events'
+import { getErrorResponse } from '../../services/api'
 import {
   getStoredRSVP,
   saveStoredRSVP,
@@ -81,11 +82,12 @@ export const RSVPFlow = () => {
         if (storedRSVP) {
           await loadExistingRSVP(invitationToken, storedRSVP.editToken)
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const { status } = getErrorResponse(error)
         const errorMessage =
-          error.response?.status === 403
+          status === 403
             ? 'Access code required or invalid'
-            : error.response?.status === 404
+            : status === 404
             ? 'Event not found'
             : 'Failed to load event'
         setState((prev) => ({ ...prev, error: errorMessage, loading: false }))
@@ -172,7 +174,7 @@ export const RSVPFlow = () => {
 
     try {
       // Normalize survey answers
-      const normalizedSurveyAnswers: Record<number, any> = {}
+      const normalizedSurveyAnswers: Record<number, string | string[] | boolean | Record<string, string> | { value: string; other_text: string } | { values: string[]; other_text: string }> = {}
       if (state.event.survey) {
         for (const question of state.event.survey.questions) {
           let answer = surveyAnswers[question.id]
@@ -255,11 +257,12 @@ export const RSVPFlow = () => {
       }
       
       setState((prev) => ({ ...prev, currentStep: getTotalSteps(), loading: false }))
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const { status } = getErrorResponse(error)
       const errorMessage =
-        error.response?.status === 403
+        status === 403
           ? 'Invalid access code'
-          : error.response?.status === 404
+          : status === 404
           ? 'Event not found'
           : 'Failed to submit RSVP. Please try again.'
       setState((prev) => ({ ...prev, error: errorMessage, loading: false }))

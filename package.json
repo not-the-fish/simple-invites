@@ -1,0 +1,7 @@
+{
+  "name": "simple-invites",
+  "private": true,
+  "scripts": {
+    "lint": "npm run lint --prefix frontend"
+  }
+}

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { adminApi, setAuthToken } from '../../services/admin'
+import { getErrorResponse } from '../../services/api'
 
 export const LoginPage = () => {
   const navigate = useNavigate()
@@ -20,8 +21,9 @@ export const LoginPage = () => {
       setAuthToken(response.access_token)
       localStorage.setItem('admin_token', response.access_token)
       navigate('/admin/dashboard')
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Login failed. Please check your credentials.')
+    } catch (err: unknown) {
+      const { detail } = getErrorResponse(err)
+      setError(detail || 'Login failed. Please check your credentials.')
     } finally {
       setLoading(false)
     }

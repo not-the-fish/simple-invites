@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { adminApi, setAuthToken } from '../../services/admin'
+import { getErrorResponse } from '../../services/api'
 import type { Event, Survey } from '../../types/admin'
 
 export const Dashboard = () => {
@@ -10,20 +11,7 @@ export const Dashboard = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    // Check for auth token
-    const token = localStorage.getItem('admin_token')
-    if (token) {
-      setAuthToken(token)
-    } else {
-      navigate('/admin/login')
-      return
-    }
-
-    loadData()
-  }, [navigate])
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [eventsData, surveysData] = await Promise.all([
         adminApi.listEvents(),
@@ -31,8 +19,9 @@ export const Dashboard = () => {
       ])
       setEvents(eventsData)
       setSurveys(surveysData)
-    } catch (err: any) {
-      if (err.response?.status === 401) {
+    } catch (err: unknown) {
+      const { status } = getErrorResponse(err)
+      if (status === 401) {
         localStorage.removeItem('admin_token')
         navigate('/admin/login')
       } else {
@@ -41,7 +30,17 @@ export const Dashboard = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [navigate])
+
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token')
+    if (token) {
+      setAuthToken(token)
+      loadData()
+    } else {
+      navigate('/admin/login')
+    }
+  }, [navigate, loadData])
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token')

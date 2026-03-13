@@ -52,15 +52,34 @@ api.interceptors.response.use(
           retryableStatuses: [408, 429, 500, 502, 503, 504],
         }
       )
-    } catch (retryError: any) {
+    } catch (retryError: unknown) {
       const enhancedError: ApiError = {
-        ...(retryError && typeof retryError === 'object' ? retryError : {} as AxiosError),
+        ...(retryError && typeof retryError === 'object' ? (retryError as AxiosError) : {} as AxiosError),
         userMessage: getErrorMessage(retryError),
       }
       return Promise.reject(enhancedError)
     }
   }
 )
+
+/** Extract status and detail from an unknown error (e.g. axios response). */
+export function getErrorResponse(err: unknown): { status?: number; detail?: string; message?: string } {
+  if (!err || typeof err !== 'object') return {}
+  const o = err as Record<string, unknown>
+  const response = o.response as Record<string, unknown> | undefined
+  const status = response && typeof response.status === 'number' ? response.status : undefined
+  const data = response?.data
+  const detail =
+    data && typeof data === 'object' && data !== null && 'detail' in data
+      ? (data as { detail: unknown }).detail
+      : undefined
+  const message = typeof o.message === 'string' ? o.message : undefined
+  return {
+    status,
+    detail: typeof detail === 'string' ? detail : undefined,
+    message,
+  }
+}
 
 /**
  * Check if an error is retryable

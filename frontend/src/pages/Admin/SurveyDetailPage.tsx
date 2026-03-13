@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { adminApi, setAuthToken } from '../../services/admin'
+import { getErrorResponse } from '../../services/api'
 import type { Survey } from '../../types/admin'
 
 export const SurveyDetailPage = () => {
@@ -10,26 +11,14 @@ export const SurveyDetailPage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const token = localStorage.getItem('admin_token')
-    if (token) {
-      setAuthToken(token)
-    } else {
-      navigate('/admin/login')
-      return
-    }
-
-    if (surveyId) {
-      loadSurvey()
-    }
-  }, [surveyId, navigate])
-
-  const loadSurvey = async () => {
+  const loadSurvey = useCallback(async () => {
+    if (!surveyId) return
     try {
       const data = await adminApi.getSurvey(Number(surveyId))
       setSurvey(data)
-    } catch (err: any) {
-      if (err.response?.status === 401) {
+    } catch (err: unknown) {
+      const { status } = getErrorResponse(err)
+      if (status === 401) {
         localStorage.removeItem('admin_token')
         navigate('/admin/login')
       } else {
@@ -38,7 +27,17 @@ export const SurveyDetailPage = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [surveyId, navigate])
+
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token')
+    if (token) {
+      setAuthToken(token)
+      if (surveyId) loadSurvey()
+    } else {
+      navigate('/admin/login')
+    }
+  }, [surveyId, navigate, loadSurvey])
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this survey? This action cannot be undone.')) {
@@ -48,7 +47,7 @@ export const SurveyDetailPage = () => {
     try {
       await adminApi.deleteSurvey(Number(surveyId))
       navigate('/admin/dashboard')
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError('Failed to delete survey')
     }
   }

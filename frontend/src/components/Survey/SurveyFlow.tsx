@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { surveysApi } from '../../services/surveys'
+import { getErrorResponse } from '../../services/api'
 import { QuestionScreen } from '../RSVP/QuestionScreen'
 import { Transition } from '../Shared/Transition'
 import { QuestionInput } from './QuestionInput'
@@ -30,11 +31,9 @@ export const SurveyFlow = () => {
         // Sort questions by order
         const sortedQuestions = [...data.questions].sort((a, b) => a.order - b.order)
         setSurvey({ ...data, questions: sortedQuestions })
-      } catch (err: any) {
-        const errorMessage =
-          err.response?.status === 404
-            ? 'Survey not found'
-            : 'Failed to load survey'
+      } catch (err: unknown) {
+        const { status } = getErrorResponse(err)
+        const errorMessage = status === 404 ? 'Survey not found' : 'Failed to load survey'
         setError(errorMessage)
       } finally {
         setLoading(false)
@@ -123,8 +122,9 @@ export const SurveyFlow = () => {
 
       await surveysApi.submitResponses(surveyToken, { answers: normalizedAnswers })
       setSubmitted(true)
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to submit responses. Please try again.')
+    } catch (err: unknown) {
+      const { detail } = getErrorResponse(err)
+      setError(detail || 'Failed to submit responses. Please try again.')
     } finally {
       setSubmitting(false)
     }

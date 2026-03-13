@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { adminApi, setAuthToken } from '../../services/admin'
+import { getErrorResponse } from '../../services/api'
 import type { SurveyCreate, QuestionType, Event, QuestionCreate } from '../../types/admin'
 
 export const SurveyFormPage = () => {
@@ -19,49 +20,23 @@ export const SurveyFormPage = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const token = localStorage.getItem('admin_token')
-    if (token) {
-      setAuthToken(token)
-    } else {
-      navigate('/admin/login')
-      return
-    }
-
-    loadEvents()
-
-    if (isEdit && surveyId) {
-      loadSurvey()
-    } else {
-      // Start with one empty question for new surveys
-      setQuestions([{
-        question_type: 'text',
-        question_text: '',
-        options: null,
-        allow_other: false,
-        required: false,
-        order: 1,
-      }])
-    }
-  }, [surveyId, isEdit, navigate])
-
-  const loadEvents = async () => {
+  const loadEvents = useCallback(async () => {
     try {
       const data = await adminApi.listEvents()
       setEvents(data)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to load events:', err)
     }
-  }
+  }, [])
 
-  const loadSurvey = async () => {
+  const loadSurvey = useCallback(async () => {
+    if (!surveyId) return
     try {
       setLoading(true)
       const survey = await adminApi.getSurvey(Number(surveyId))
       setTitle(survey.title)
       setDescription(survey.description || '')
       setEventId(survey.event_id)
-      // Load questions separately
       const surveyQuestions = await adminApi.getSurveyQuestions(Number(surveyId))
       const loadedQuestions = surveyQuestions.map(q => ({
         question_type: q.question_type,
@@ -72,15 +47,12 @@ export const SurveyFormPage = () => {
         order: q.order,
       }))
       setQuestions(loadedQuestions)
-      // Store existing question IDs for tracking
       setExistingQuestionIds(surveyQuestions.map(q => q.id))
 
-      // Initialize options text for each question
       const initialOptionsText: Record<number, string> = {}
       const initialMatrixConfig: Record<number, { rows: string, columns: string }> = {}
       loadedQuestions.forEach((q, idx) => {
         if (q.question_type === 'matrix' && q.options) {
-          // Parse matrix config
           try {
             const config = typeof q.options === 'string' ? JSON.parse(q.options) : q.options
             if (config.rows && config.columns) {
@@ -90,7 +62,6 @@ export const SurveyFormPage = () => {
               }
             }
           } catch {
-            // Fallback - try to parse as array or use defaults
             if (Array.isArray(q.options)) {
               initialMatrixConfig[idx] = {
                 rows: 'First\nSecond\nThird\nFourth',
@@ -109,13 +80,36 @@ export const SurveyFormPage = () => {
       })
       setOptionsText(initialOptionsText)
       setMatrixConfig(initialMatrixConfig)
-      setLoading(false)
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const { detail, message } = getErrorResponse(err)
       console.error('Failed to load survey:', err)
-      setError(`Failed to load survey: ${err.response?.data?.detail || err.message}`)
+      setError(`Failed to load survey: ${detail || message || 'Unknown error'}`)
+    } finally {
       setLoading(false)
     }
-  }
+  }, [surveyId])
+
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token')
+    if (token) {
+      setAuthToken(token)
+      loadEvents()
+      if (isEdit && surveyId) {
+        loadSurvey()
+      } else {
+        setQuestions([{
+          question_type: 'text',
+          question_text: '',
+          options: null,
+          allow_other: false,
+          required: false,
+          order: 1,
+        }])
+      }
+    } else {
+      navigate('/admin/login')
+    }
+  }, [surveyId, isEdit, navigate, loadEvents, loadSurvey])
 
   const addQuestion = () => {
     const newOrder = questions.length > 0 
@@ -423,10 +417,10 @@ export const SurveyFormPage = () => {
         await adminApi.createSurvey(submitData)
         navigate('/admin/dashboard')
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const { detail, message } = getErrorResponse(err)
       console.error('Survey submission error:', err)
-      const errorMessage = err.response?.data?.detail || err.message || 'Failed to save survey'
-      setError(errorMessage)
+      setError(detail || message || 'Failed to save survey')
       setLoading(false)
       // Don't navigate on error - let user see the error message
       return

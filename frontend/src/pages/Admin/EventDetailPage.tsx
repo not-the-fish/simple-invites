@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { adminApi, setAuthToken } from '../../services/admin'
+import { getErrorResponse } from '../../services/api'
 import type { Event } from '../../types/admin'
 
 export const EventDetailPage = () => {
@@ -10,26 +11,14 @@ export const EventDetailPage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const token = localStorage.getItem('admin_token')
-    if (token) {
-      setAuthToken(token)
-    } else {
-      navigate('/admin/login')
-      return
-    }
-
-    if (eventId) {
-      loadEvent()
-    }
-  }, [eventId, navigate])
-
-  const loadEvent = async () => {
+  const loadEvent = useCallback(async () => {
+    if (!eventId) return
     try {
       const data = await adminApi.getEvent(Number(eventId))
       setEvent(data)
-    } catch (err: any) {
-      if (err.response?.status === 401) {
+    } catch (err: unknown) {
+      const { status } = getErrorResponse(err)
+      if (status === 401) {
         localStorage.removeItem('admin_token')
         navigate('/admin/login')
       } else {
@@ -38,7 +27,17 @@ export const EventDetailPage = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [eventId, navigate])
+
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token')
+    if (token) {
+      setAuthToken(token)
+      if (eventId) loadEvent()
+    } else {
+      navigate('/admin/login')
+    }
+  }, [eventId, navigate, loadEvent])
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
@@ -48,7 +47,7 @@ export const EventDetailPage = () => {
     try {
       await adminApi.deleteEvent(Number(eventId))
       navigate('/admin/dashboard')
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError('Failed to delete event')
     }
   }

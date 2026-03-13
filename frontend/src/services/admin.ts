@@ -9,9 +9,9 @@ export const adminApi = {
     return response.data
   },
 
-  async getMe(): Promise<any> {
+  async getMe(): Promise<Record<string, unknown>> {
     const response = await api.get('/api/admin/me')
-    return response.data
+    return response.data as Record<string, unknown>
   },
 
   async listEvents(): Promise<Event[]> {

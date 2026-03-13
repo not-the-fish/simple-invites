@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { adminApi, setAuthToken } from '../../services/admin'
+import { getErrorResponse } from '../../services/api'
 import { QuestionVisualization } from '../../components/Admin/QuestionVisualization'
 import type { Survey } from '../../types/admin'
 import type { QuestionResponse, SurveySubmission, QuestionResponseGroup } from '../../types/survey'
@@ -16,21 +17,8 @@ export const SurveyResultsPage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const token = localStorage.getItem('admin_token')
-    if (token) {
-      setAuthToken(token)
-    } else {
-      navigate('/admin/login')
-      return
-    }
-
-    if (surveyId) {
-      loadData()
-    }
-  }, [surveyId, navigate])
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
+    if (!surveyId) return
     try {
       const [surveyData, submissionsData, responsesData, responsesByQuestionData] = await Promise.all([
         adminApi.getSurvey(Number(surveyId)),
@@ -42,8 +30,9 @@ export const SurveyResultsPage = () => {
       setSubmissions(submissionsData)
       setResponses(responsesData)
       setResponsesByQuestion(responsesByQuestionData)
-    } catch (err: any) {
-      if (err.response?.status === 401) {
+    } catch (err: unknown) {
+      const { status } = getErrorResponse(err)
+      if (status === 401) {
         localStorage.removeItem('admin_token')
         navigate('/admin/login')
       } else {
@@ -52,7 +41,17 @@ export const SurveyResultsPage = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [surveyId, navigate])
+
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token')
+    if (token) {
+      setAuthToken(token)
+      if (surveyId) loadData()
+    } else {
+      navigate('/admin/login')
+    }
+  }, [surveyId, navigate, loadData])
 
   const formatAnswer = (answer: string | string[] | boolean | Record<string, string> | null): string => {
     if (answer === null || answer === undefined) {
@@ -66,13 +65,14 @@ export const SurveyResultsPage = () => {
     }
     if (typeof answer === 'object' && !Array.isArray(answer)) {
       // Handle "other" format for multiple choice: { value: "other", other_text: "custom" }
-      if ('value' in answer && (answer as any).value === 'other') {
-        return `Other: ${(answer as any).other_text || ''}`
+      if ('value' in answer && (answer as { value: string; other_text?: string }).value === 'other') {
+        const o = answer as { value: string; other_text?: string }
+        return `Other: ${o.other_text || ''}`
       }
-      // Handle "other" format for checkbox: { values: ["option1", "other"], other_text: "custom" }
-      if ('values' in answer && Array.isArray((answer as any).values)) {
-        const values = (answer as any).values as string[]
-        const otherText = (answer as any).other_text || ''
+      if ('values' in answer && Array.isArray((answer as { values: string[] }).values)) {
+        const o = answer as { values: string[]; other_text?: string }
+        const values = o.values
+        const otherText = o.other_text || ''
         const displayValues = values.map(v => v === 'other' ? `Other: ${otherText}` : v)
         return displayValues.join(', ')
       }

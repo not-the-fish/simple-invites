@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { adminApi, setAuthToken } from '../../services/admin'
+import { getErrorResponse } from '../../services/api'
 import type { Event, EventCreate, EventUpdate, QuestionCreate, Survey } from '../../types/admin'
 import { getUserTimezone, getTimezoneAbbreviation } from '../../utils/timezone'
 
@@ -57,20 +58,53 @@ export const EventFormPage = () => {
   const [editSurveyAfterCreate, setEditSurveyAfterCreate] = useState(false)
   const cloneEventPrefilledRef = useRef(false)
 
+  const loadSurveys = useCallback(async () => {
+    try {
+      const surveysData = await adminApi.listSurveys()
+      setSurveys(surveysData)
+    } catch (err: unknown) {
+      console.error('Failed to load surveys:', err)
+    }
+  }, [])
+
+  const loadEvent = useCallback(async () => {
+    if (!eventId) return
+    try {
+      const event = await adminApi.getEvent(Number(eventId))
+      const date = new Date(event.date)
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      const localDate = `${year}-${month}-${day}T${hours}:${minutes}`
+      setFormData({
+        title: event.title,
+        description: event.description || '',
+        date: localDate,
+        location: event.location || '',
+        access_code: event.access_code || '',
+        show_rsvp_list: event.show_rsvp_list || false,
+        survey_id: event.survey_id || null,
+        survey_description: null,
+        survey_questions: [],
+      })
+      setSurveyMode(event.survey_id ? 'existing' : 'none')
+    } catch (err: unknown) {
+      setError('Failed to load event')
+    }
+  }, [eventId])
+
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
     if (token) {
       setAuthToken(token)
+      loadSurveys()
+      if (isEdit && eventId) loadEvent()
     } else {
       navigate('/admin/login')
-      return
     }
-
-    loadSurveys()
-    if (isEdit && eventId) {
-      loadEvent()
-    }
-  }, [eventId, isEdit, navigate])
+  }, [eventId, isEdit, navigate, loadSurveys, loadEvent])
 
   // Load clone source when on new-event with cloneFrom
   useEffect(() => {
@@ -94,9 +128,10 @@ export const EventFormPage = () => {
           setCloneSourceSurvey(survey)
           if (!survey.questions?.length) setCloneSurvey(false)
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (cancelled) return
-        if (err.response?.status === 404) {
+        const { status } = getErrorResponse(err)
+        if (status === 404) {
           setCloneError('Source event not found')
         } else {
           setCloneError('Failed to load event to clone')
@@ -146,46 +181,6 @@ export const EventFormPage = () => {
     }
   }, [cloneSourceEvent, cloneSourceSurvey, cloneSurvey, isEdit])
 
-  const loadSurveys = async () => {
-    try {
-      const surveysData = await adminApi.listSurveys()
-      setSurveys(surveysData)
-    } catch (err: any) {
-      console.error('Failed to load surveys:', err)
-    }
-  }
-
-  const loadEvent = async () => {
-    try {
-      const event = await adminApi.getEvent(Number(eventId))
-      // Convert ISO datetime (UTC) to datetime-local format (YYYY-MM-DDTHH:mm)
-      // The datetime-local input expects local time, so we need to convert from UTC to local
-      const date = new Date(event.date)
-      // Get local date components
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      const hours = String(date.getHours()).padStart(2, '0')
-      const minutes = String(date.getMinutes()).padStart(2, '0')
-      const localDate = `${year}-${month}-${day}T${hours}:${minutes}`
-      
-      setFormData({
-        title: event.title,
-        description: event.description || '',
-        date: localDate,
-        location: event.location || '',
-        access_code: event.access_code || '',
-        show_rsvp_list: event.show_rsvp_list || false,
-        survey_id: event.survey_id || null,
-        survey_description: null,
-        survey_questions: [],
-      })
-      setSurveyMode(event.survey_id ? 'existing' : 'none')
-    } catch (err: any) {
-      setError('Failed to load event')
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -233,8 +228,9 @@ export const EventFormPage = () => {
         }
       }
       navigate('/admin/dashboard')
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to save event')
+    } catch (err: unknown) {
+      const { detail } = getErrorResponse(err)
+      setError(detail || 'Failed to save event')
     } finally {
       setLoading(false)
     }

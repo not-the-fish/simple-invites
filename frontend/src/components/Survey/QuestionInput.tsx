@@ -42,13 +42,14 @@ export const QuestionInput = ({
 
   if (questionType === 'multiple_choice' && options && Array.isArray(options)) {
     // Check if "other" is selected
-    const isOtherSelected = typeof value === 'object' && value !== null && !Array.isArray(value) && 'value' in value && (value as any).value === 'other'
-    const currentOtherText = isOtherSelected ? ((value as any).other_text || '') : otherText
-    
+    const valueWithOther = value as { value: string; other_text?: string } | null
+    const isOtherSelected = typeof value === 'object' && value !== null && !Array.isArray(value) && 'value' in value && valueWithOther?.value === 'other'
+    const currentOtherText = isOtherSelected ? (valueWithOther?.other_text || '') : otherText
+
     return (
       <div className="space-y-3">
         {options.map((option: string, index: number) => {
-          const isSelected = value === option || (typeof value === 'object' && value !== null && 'value' in value && (value as any).value === option)
+          const isSelected = value === option || (typeof value === 'object' && value !== null && 'value' in value && (value as { value: string }).value === option)
           return (
             <motion.button
               key={index}
@@ -140,9 +141,9 @@ export const QuestionInput = ({
     let currentOtherText = ''
     
     if (typeof value === 'object' && value !== null && !Array.isArray(value) && 'values' in value) {
-      // Dict format: { values: ["option1", "other"], other_text: "custom" }
-      selectedValues = (value as any).values || []
-      currentOtherText = (value as any).other_text || ''
+      const o = value as { values: string[]; other_text?: string }
+      selectedValues = o.values || []
+      currentOtherText = o.other_text || ''
     } else if (Array.isArray(value)) {
       // Array format: ["option1", "option2"]
       selectedValues = value

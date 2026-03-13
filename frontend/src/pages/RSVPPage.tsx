@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
 import { eventsApi } from '../services/events'
 import { RSVPFlow } from '../components/RSVP/RSVPFlow'
@@ -42,31 +42,28 @@ export const RSVPPage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const loadStats = useCallback(async () => {
+    if (!invitationToken) return
+    try {
+      setLoading(true)
+      const response = await eventsApi.getRSVPStats(invitationToken, accessCodeParam || undefined)
+      setStats(response)
+    } catch (err: unknown) {
+      setError(getErrorMessage(err))
+    } finally {
+      setLoading(false)
+    }
+  }, [invitationToken, accessCodeParam])
+
   useEffect(() => {
-    // Check if we're coming from a direct link to start RSVP
     const shouldStartRSVP = searchParams.get('start') === 'true'
     if (shouldStartRSVP) {
       setViewMode('rsvp')
       setLoading(false)
       return
     }
-
     loadStats()
-  }, [invitationToken, searchParams])
-
-  const loadStats = async () => {
-    if (!invitationToken) return
-
-    try {
-      setLoading(true)
-      const response = await eventsApi.getRSVPStats(invitationToken, accessCodeParam || undefined)
-      setStats(response)
-    } catch (err: any) {
-      setError(getErrorMessage(err))
-    } finally {
-      setLoading(false)
-    }
-  }
+  }, [invitationToken, searchParams, loadStats])
 
   const handleStartRSVP = () => {
     setViewMode('rsvp')
@@ -119,14 +116,14 @@ export const RSVPPage = () => {
             <div className="prose prose-gray max-w-none">
               <ReactMarkdown
                 components={{
-                  h1: ({ node, ...props }) => <h1 {...props} className="text-2xl font-bold text-gray-900 mt-6 mb-4" />,
-                  h2: ({ node, ...props }) => <h2 {...props} className="text-xl font-bold text-gray-900 mt-5 mb-3" />,
-                  h3: ({ node, ...props }) => <h3 {...props} className="text-lg font-semibold text-gray-900 mt-4 mb-2" />,
-                  p: ({ node, ...props }) => <p {...props} className="text-gray-700 mb-4 leading-relaxed" />,
-                  ul: ({ node, ...props }) => <ul {...props} className="list-disc list-inside mb-4 space-y-2 text-gray-700" />,
-                  ol: ({ node, ...props }) => <ol {...props} className="list-decimal list-inside mb-4 space-y-2 text-gray-700" />,
-                  li: ({ node, ...props }) => <li {...props} className="ml-4" />,
-                  a: ({ node, ...props }) => (
+                  h1: ({ ...props }) => <h1 {...props} className="text-2xl font-bold text-gray-900 mt-6 mb-4" />,
+                  h2: ({ ...props }) => <h2 {...props} className="text-xl font-bold text-gray-900 mt-5 mb-3" />,
+                  h3: ({ ...props }) => <h3 {...props} className="text-lg font-semibold text-gray-900 mt-4 mb-2" />,
+                  p: ({ ...props }) => <p {...props} className="text-gray-700 mb-4 leading-relaxed" />,
+                  ul: ({ ...props }) => <ul {...props} className="list-disc list-inside mb-4 space-y-2 text-gray-700" />,
+                  ol: ({ ...props }) => <ol {...props} className="list-decimal list-inside mb-4 space-y-2 text-gray-700" />,
+                  li: ({ ...props }) => <li {...props} className="ml-4" />,
+                  a: ({ ...props }) => (
                     <a {...props} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline" />
                   ),
                 }}

@@ -7,24 +7,22 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(() =>
+    localStorage.getItem('admin_token') ? null : false
+  )
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
-    if (token) {
-      setAuthToken(token)
-      // Verify token is still valid
-      adminApi
-        .getMe()
-        .then(() => setIsAuthenticated(true))
-        .catch(() => {
-          localStorage.removeItem('admin_token')
-          setAuthToken(null)
-          setIsAuthenticated(false)
-        })
-    } else {
-      setIsAuthenticated(false)
-    }
+    if (!token) return
+    setAuthToken(token)
+    adminApi
+      .getMe()
+      .then(() => setIsAuthenticated(true))
+      .catch(() => {
+        localStorage.removeItem('admin_token')
+        setAuthToken(null)
+        setIsAuthenticated(false)
+      })
   }, [])
 
   if (isAuthenticated === null) {
