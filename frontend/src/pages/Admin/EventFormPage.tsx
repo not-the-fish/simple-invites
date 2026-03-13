@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { adminApi, setAuthToken } from '../../services/admin'
 import { getErrorResponse } from '../../services/api'
-import type { Event, EventCreate, EventUpdate, QuestionCreate, Survey } from '../../types/admin'
+import type { Event, EventCreate, EventUpdate, Question, QuestionCreate, Survey } from '../../types/admin'
 import { getUserTimezone, getTimezoneAbbreviation } from '../../utils/timezone'
 
 function eventToDatetimeLocal(dateString: string): string {
@@ -15,9 +15,9 @@ function eventToDatetimeLocal(dateString: string): string {
   return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
-function mapQuestionToCreate(q: { question_type: string; question_text: string; options?: string[] | Record<string, string[]> | null; allow_other: boolean; required: boolean; order: number }): QuestionCreate {
+function mapQuestionToCreate(q: Question): QuestionCreate {
   return {
-    question_type: q.question_type as QuestionCreate['question_type'],
+    question_type: q.question_type,
     question_text: q.question_text,
     options: q.options ?? undefined,
     allow_other: q.allow_other,

@@ -69,8 +69,8 @@ export const SurveyResultsPage = () => {
         const o = answer as { value: string; other_text?: string }
         return `Other: ${o.other_text || ''}`
       }
-      if ('values' in answer && Array.isArray((answer as { values: string[] }).values)) {
-        const o = answer as { values: string[]; other_text?: string }
+      if ('values' in answer && Array.isArray((answer as unknown as { values: string[] }).values)) {
+        const o = answer as unknown as { values: string[]; other_text?: string }
         const values = o.values
         const otherText = o.other_text || ''
         const displayValues = values.map(v => v === 'other' ? `Other: ${otherText}` : v)
