@@ -100,6 +100,12 @@ export const EventDetailPage = () => {
               >
                 Edit
               </Link>
+              <Link
+                to={`/admin/events/new?cloneFrom=${eventId}`}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Clone
+              </Link>
               <button
                 onClick={handleDelete}
                 className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"

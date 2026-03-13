@@ -1,13 +1,36 @@
-import { useEffect, useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { adminApi, setAuthToken } from '../../services/admin'
-import type { EventCreate, EventUpdate, Survey } from '../../types/admin'
+import type { Event, EventCreate, EventUpdate, QuestionCreate, Survey } from '../../types/admin'
 import { getUserTimezone, getTimezoneAbbreviation } from '../../utils/timezone'
+
+function eventToDatetimeLocal(dateString: string): string {
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${year}-${month}-${day}T${hours}:${minutes}`
+}
+
+function mapQuestionToCreate(q: { question_type: string; question_text: string; options?: string[] | Record<string, string[]> | null; allow_other: boolean; required: boolean; order: number }): QuestionCreate {
+  return {
+    question_type: q.question_type as QuestionCreate['question_type'],
+    question_text: q.question_text,
+    options: q.options ?? undefined,
+    allow_other: q.allow_other,
+    required: q.required,
+    order: q.order,
+  }
+}
 
 export const EventFormPage = () => {
   const { eventId } = useParams<{ eventId: string }>()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const isEdit = !!eventId
+  const cloneFrom = searchParams.get('cloneFrom')
 
   const [formData, setFormData] = useState<EventCreate>({
     title: '',
@@ -25,6 +48,15 @@ export const EventFormPage = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Clone-from-event state
+  const [cloneSourceEvent, setCloneSourceEvent] = useState<Event | null>(null)
+  const [cloneSourceSurvey, setCloneSourceSurvey] = useState<Survey | null>(null)
+  const [cloneLoading, setCloneLoading] = useState(false)
+  const [cloneError, setCloneError] = useState<string | null>(null)
+  const [cloneSurvey, setCloneSurvey] = useState<boolean | null>(null)
+  const [editSurveyAfterCreate, setEditSurveyAfterCreate] = useState(false)
+  const cloneEventPrefilledRef = useRef(false)
+
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
     if (token) {
@@ -39,6 +71,80 @@ export const EventFormPage = () => {
       loadEvent()
     }
   }, [eventId, isEdit, navigate])
+
+  // Load clone source when on new-event with cloneFrom
+  useEffect(() => {
+    if (!cloneFrom || isEdit) return
+    let cancelled = false
+    setCloneLoading(true)
+    setCloneError(null)
+    setCloneSourceEvent(null)
+    setCloneSourceSurvey(null)
+    setCloneSurvey(null)
+    cloneEventPrefilledRef.current = false
+
+    const loadCloneSource = async () => {
+      try {
+        const event = await adminApi.getEvent(Number(cloneFrom))
+        if (cancelled) return
+        setCloneSourceEvent(event)
+        if (event.survey_id) {
+          const survey = await adminApi.getSurvey(event.survey_id)
+          if (cancelled) return
+          setCloneSourceSurvey(survey)
+          if (!survey.questions?.length) setCloneSurvey(false)
+        }
+      } catch (err: any) {
+        if (cancelled) return
+        if (err.response?.status === 404) {
+          setCloneError('Source event not found')
+        } else {
+          setCloneError('Failed to load event to clone')
+        }
+      } finally {
+        if (!cancelled) setCloneLoading(false)
+      }
+    }
+    loadCloneSource()
+    return () => { cancelled = true }
+  }, [cloneFrom, isEdit])
+
+  // Prefill form from clone source (event fields once; survey when clone choices resolved)
+  useEffect(() => {
+    if (!cloneSourceEvent || isEdit) return
+
+    if (!cloneEventPrefilledRef.current) {
+      cloneEventPrefilledRef.current = true
+      setFormData((prev) => ({
+        ...prev,
+        title: cloneSourceEvent.title,
+        description: cloneSourceEvent.description || '',
+        date: eventToDatetimeLocal(cloneSourceEvent.date),
+        location: cloneSourceEvent.location || '',
+        access_code: '', // do not copy hash
+        show_rsvp_list: cloneSourceEvent.show_rsvp_list ?? false,
+      }))
+    }
+
+    const hasSurveyQuestions = cloneSourceSurvey && cloneSourceSurvey.questions && cloneSourceSurvey.questions.length > 0
+    if (!hasSurveyQuestions) {
+      setSurveyMode('none')
+      return
+    }
+    if (cloneSurvey === false) {
+      setSurveyMode('none')
+      setFormData((prev) => ({ ...prev, survey_description: null, survey_questions: [] }))
+      return
+    }
+    if (cloneSurvey === true && cloneSourceSurvey) {
+      setSurveyMode('create')
+      setFormData((prev) => ({
+        ...prev,
+        survey_description: cloneSourceSurvey.description ?? null,
+        survey_questions: cloneSourceSurvey.questions!.map(mapQuestionToCreate),
+      }))
+    }
+  }, [cloneSourceEvent, cloneSourceSurvey, cloneSurvey, isEdit])
 
   const loadSurveys = async () => {
     try {
@@ -119,8 +225,9 @@ export const EventFormPage = () => {
         await adminApi.updateEvent(Number(eventId), submitData)
       } else {
         const createdEvent = await adminApi.createEvent(submitData)
-        // If we created a new survey, navigate directly to edit it
-        if (surveyMode === 'create') {
+        // If we created a new survey: when cloning, only go to edit if user chose "edit after"; otherwise always go to edit
+        const goToSurveyEdit = surveyMode === 'create' && (cloneFrom ? editSurveyAfterCreate : true)
+        if (goToSurveyEdit) {
           navigate(`/admin/surveys/${createdEvent.survey_id}/edit`)
           return
         }
@@ -146,8 +253,67 @@ export const EventFormPage = () => {
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow p-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">
-            {isEdit ? 'Edit Event' : 'Create New Event'}
+            {isEdit ? 'Edit Event' : cloneFrom ? 'Clone Event' : 'Create New Event'}
           </h1>
+
+          {cloneLoading && (
+            <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+              <p className="text-sm text-gray-600">Loading event to clone...</p>
+            </div>
+          )}
+
+          {cloneError && (
+            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm text-amber-800">{cloneError}</p>
+              <Link to="/admin/events/new" className="mt-2 inline-block text-sm text-amber-700 underline">Start with empty form</Link>
+            </div>
+          )}
+
+          {cloneSourceEvent && cloneSourceSurvey && cloneSourceSurvey.questions && cloneSourceSurvey.questions.length > 0 && cloneSurvey === null && !cloneLoading && (
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-4">
+              <p className="text-sm text-gray-800">
+                Cloning from: <strong>{cloneSourceEvent.title}</strong>. This event has a survey with {cloneSourceSurvey.questions.length} question{cloneSourceSurvey.questions.length === 1 ? '' : 's'}. Do you want to clone the survey?
+              </p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setCloneSurvey(true)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
+                >
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCloneSurvey(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm font-medium"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+          )}
+
+          {cloneSurvey === true && (
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-4">
+              <p className="text-sm text-gray-800">Edit the cloned survey after creating the event?</p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setEditSurveyAfterCreate(true)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium ${editSurveyAfterCreate ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+                >
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditSurveyAfterCreate(false)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium ${!editSurveyAfterCreate ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+                >
+                  No
+                </button>
+              </div>
+            </div>
+          )}
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -384,10 +550,10 @@ Line breaks are preserved`}
               </Link>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || cloneLoading}
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Saving...' : isEdit ? 'Update Event' : 'Create Event'}
+                {loading ? 'Saving...' : cloneLoading ? 'Loading...' : isEdit ? 'Update Event' : 'Create Event'}
               </button>
             </div>
           </form>

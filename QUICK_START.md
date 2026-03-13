@@ -23,12 +23,9 @@ docker-compose ps db
 
 ```bash
 cd backend
-source .venv/bin/activate
+source .venv/bin/activate  # or: uv run bash (if using uv)
 
-# Create initial migration
-alembic revision --autogenerate -m "Initial migration"
-
-# Apply migrations
+# Apply existing migrations (do not create a new migration)
 alembic upgrade head
 ```
 

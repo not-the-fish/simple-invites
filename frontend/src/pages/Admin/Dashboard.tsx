@@ -138,18 +138,24 @@ export const Dashboard = () => {
                         </p>
                       )}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <Link
                         to={`/admin/events/${event.id}`}
-                        className="flex-1 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-center text-sm font-medium"
+                        className="flex-1 min-w-0 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-center text-sm font-medium"
                       >
                         View Details
                       </Link>
                       <Link
                         to={`/admin/events/${event.id}/rsvps`}
-                        className="flex-1 px-4 py-2 bg-pink-100 text-pink-700 rounded-lg hover:bg-pink-200 transition-colors text-center text-sm font-medium"
+                        className="flex-1 min-w-0 px-4 py-2 bg-pink-100 text-pink-700 rounded-lg hover:bg-pink-200 transition-colors text-center text-sm font-medium"
                       >
                         View RSVPs
+                      </Link>
+                      <Link
+                        to={`/admin/events/new?cloneFrom=${event.id}`}
+                        className="flex-1 min-w-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-center text-sm font-medium"
+                      >
+                        Clone
                       </Link>
                     </div>
                   </div>
