@@ -2,7 +2,11 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, s
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.services.email_service import send_rsvp_confirmation
+from app.services.email_service import (
+    format_answer,
+    send_host_rsvp_notification,
+    send_rsvp_confirmation,
+)
 
 from app.api.surveys import _validate_answer
 from app.core.security import (
@@ -280,6 +284,9 @@ async def submit_rsvp(
     db.add(submission)
     db.flush()  # Flush to get submission.id
 
+    # Collect (question_text, formatted_answer) pairs for the host notification
+    survey_answers: list[tuple[str, str]] = []
+
     # Handle survey responses if provided
     if rsvp_data.survey_responses:
         # Get all questions for the survey
@@ -308,9 +315,32 @@ async def submit_rsvp(
                 submission_id=submission.id, question_id=question_id, answer=answer
             )
             db.add(question_response)
+            survey_answers.append((str(question.question_text), format_answer(answer)))
 
     db.commit()
     db.refresh(submission)
+
+    # Notify the event host (creator) of the new RSVP. Read the email while the
+    # session is open to avoid a lazy-load after the request finishes.
+    host_email = event.created_by_admin.email
+    if host_email:
+        background_tasks.add_task(
+            send_host_rsvp_notification,
+            to_email=host_email,
+            event_title=str(event.title),
+            guest_name=rsvp_data.identity,
+            response=(
+                rsvp_data.response.value
+                if hasattr(rsvp_data.response, "value")
+                else str(rsvp_data.response)
+            ),
+            num_attendees=rsvp_data.num_attendees,
+            guest_email=rsvp_data.email,
+            guest_phone=rsvp_data.phone,
+            comment=rsvp_data.comment,
+            survey_answers=survey_answers,
+            is_update=False,
+        )
 
     # Send confirmation email if email was provided
     if rsvp_data.email:
@@ -397,6 +427,7 @@ async def get_my_rsvp(
 async def update_rsvp(
     invitation_token: str,
     rsvp_data: RSVPUpdate,
+    background_tasks: BackgroundTasks,
     edit_token: str = Query(..., description="Edit token received when RSVP was submitted"),
     db: Session = Depends(get_db),
 ):
@@ -458,6 +489,9 @@ async def update_rsvp(
     matching_submission.phone = rsvp_data.phone
     matching_submission.comment = rsvp_data.comment
 
+    # Collect (question_text, formatted_answer) pairs for the host notification
+    survey_answers: list[tuple[str, str]] = []
+
     # Handle survey responses if provided
     if rsvp_data.survey_responses is not None:
         # Delete existing question responses
@@ -490,9 +524,32 @@ async def update_rsvp(
                 submission_id=matching_submission.id, question_id=question_id, answer=answer
             )
             db.add(question_response)
+            survey_answers.append((str(question.question_text), format_answer(answer)))
 
     db.commit()
     db.refresh(matching_submission)
+
+    # Notify the event host (creator) that a guest edited their RSVP. Read the
+    # email while the session is open to avoid a lazy-load after the request ends.
+    host_email = event.created_by_admin.email
+    if host_email:
+        background_tasks.add_task(
+            send_host_rsvp_notification,
+            to_email=host_email,
+            event_title=str(event.title),
+            guest_name=rsvp_data.identity,
+            response=(
+                rsvp_data.response.value
+                if hasattr(rsvp_data.response, "value")
+                else str(rsvp_data.response)
+            ),
+            num_attendees=rsvp_data.num_attendees,
+            guest_email=rsvp_data.email,
+            guest_phone=rsvp_data.phone,
+            comment=rsvp_data.comment,
+            survey_answers=survey_answers,
+            is_update=True,
+        )
 
     return RSVPResponseSchema(
         id=matching_submission.id,
