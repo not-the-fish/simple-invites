@@ -33,7 +33,7 @@ export const QuestionInput = ({
           onChange={(e) => onChange(e.target.value)}
           required={required}
           rows={4}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden transition-all"
           placeholder="Type your answer here..."
         />
       </div>
@@ -125,7 +125,7 @@ export const QuestionInput = ({
                     onChange({ value: 'other', other_text: newText })
                   }}
                   placeholder="Please specify..."
-                  className="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
                 />
               </div>
             )}
@@ -247,7 +247,7 @@ export const QuestionInput = ({
                     onChange({ values: selectedValues, other_text: newText })
                   }}
                   placeholder="Please specify..."
-                  className="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
                 />
               </div>
             )}
@@ -303,7 +303,7 @@ export const QuestionInput = ({
           value={(value as string) || ''}
           onChange={(e) => onChange(e.target.value)}
           required={required}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden transition-all"
         />
       </div>
     )
@@ -312,7 +312,7 @@ export const QuestionInput = ({
   if (questionType === 'matrix' && options) {
     // For matrix questions, options contains rows and columns
     // Parse the matrix configuration
-    let rows: string[] = []
+    let rows: string[]
     let columns: string[] = []
     
     try {
@@ -414,7 +414,7 @@ export const QuestionInput = ({
   if (questionType === 'matrix_single' && options) {
     // For matrix_single questions, options contains rows and columns
     // Parse the matrix configuration
-    let rows: string[] = []
+    let rows: string[]
     let columns: string[] = []
     
     try {

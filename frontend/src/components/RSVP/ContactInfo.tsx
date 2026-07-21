@@ -32,7 +32,7 @@ export const ContactInfo = ({
           value={email}
           onChange={(e) => onEmailChange(e.target.value)}
           placeholder="your.email@example.com"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden transition-all"
         />
         <p className="mt-2 text-xs text-gray-500">
           Add your email to edit your RSVP from any device or if your browser data is cleared. Without an email, you can still edit on this device.
@@ -49,7 +49,7 @@ export const ContactInfo = ({
           value={phone}
           onChange={(e) => onPhoneChange(e.target.value)}
           placeholder="(555) 123-4567"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden transition-all"
         />
       </div>
 
@@ -63,7 +63,7 @@ export const ContactInfo = ({
           onChange={(e) => onCommentChange(e.target.value)}
           placeholder="Any additional comments or notes..."
           rows={4}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all resize-y"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden transition-all resize-y"
         />
       </div>
     </div>

@@ -431,7 +431,7 @@ export const SurveyFormPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link to="/admin/dashboard" className="text-purple-600 hover:text-purple-700">
             ← Back to Dashboard
@@ -440,7 +440,7 @@ export const SurveyFormPage = () => {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow p-8">
+        <div className="bg-white rounded-lg shadow-sm p-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">
             {isEdit ? 'Edit Survey' : 'Create New Survey'}
           </h1>
@@ -476,7 +476,7 @@ export const SurveyFormPage = () => {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
                 />
               </div>
 
@@ -489,7 +489,7 @@ export const SurveyFormPage = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
                 />
               </div>
 
@@ -501,7 +501,7 @@ export const SurveyFormPage = () => {
                   id="event_id"
                   value={eventId || ''}
                   onChange={(e) => setEventId(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
                 >
                   <option value="">Standalone Survey (no event)</option>
                   {events.map((event) => (
@@ -577,7 +577,7 @@ export const SurveyFormPage = () => {
                               value={question.question_type}
                               onChange={(e) => handleQuestionTypeChange(index, e.target.value as QuestionType)}
                               required
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
                             >
                               <option value="text">Text Input</option>
                               <option value="multiple_choice">Multiple Choice</option>
@@ -598,7 +598,7 @@ export const SurveyFormPage = () => {
                               onChange={(e) => updateQuestion(index, { question_text: e.target.value })}
                               rows={3}
                               required
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
                               placeholder="Enter your question here..."
                             />
                           </div>
@@ -648,7 +648,7 @@ export const SurveyFormPage = () => {
                                     }}
                                     rows={6}
                                     required
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
                                     placeholder="First&#10;Second&#10;Third&#10;Fourth"
                                   />
                                   <p className="mt-1 text-sm text-gray-500">
@@ -694,7 +694,7 @@ export const SurveyFormPage = () => {
                                     }}
                                     rows={8}
                                     required
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
                                     placeholder="Monday&#10;Tuesday&#10;Wednesday&#10;Thursday&#10;Friday&#10;Saturday&#10;Sunday"
                                   />
                                   <p className="mt-1 text-sm text-gray-500">
@@ -723,7 +723,7 @@ export const SurveyFormPage = () => {
                                 }}
                                 rows={6}
                                 required={needsOptions}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
                                 placeholder="Option 1&#10;Option 2&#10;Option 3"
                               />
                               <p className="mt-1 text-sm text-gray-500">
@@ -738,7 +738,7 @@ export const SurveyFormPage = () => {
                                 type="checkbox"
                                 checked={question.allow_other || false}
                                 onChange={(e) => updateQuestion(index, { allow_other: e.target.checked })}
-                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded-sm"
                               />
                               <label className="ml-2 block text-sm text-gray-700">
                                 Allow "Other" option with text input
@@ -751,7 +751,7 @@ export const SurveyFormPage = () => {
                               type="checkbox"
                               checked={question.required}
                               onChange={(e) => updateQuestion(index, { required: e.target.checked })}
-                              className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                              className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded-sm"
                             />
                             <label className="ml-2 block text-sm text-gray-700">
                               Required field
@@ -786,7 +786,7 @@ export const SurveyFormPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-6 py-3 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Saving...' : isEdit ? 'Update Survey' : 'Create Survey'}
               </button>

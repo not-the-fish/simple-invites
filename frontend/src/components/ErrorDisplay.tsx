@@ -23,7 +23,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
       role="alert"
     >
       <div className="flex items-start">
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <svg
             className="h-5 w-5 text-red-400"
             viewBox="0 0 20 20"
@@ -60,7 +60,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
           )}
         </div>
         {onDismiss && (
-          <div className="ml-auto flex-shrink-0">
+          <div className="ml-auto shrink-0">
             <button
               onClick={onDismiss}
               className="inline-flex text-red-400 hover:text-red-500"

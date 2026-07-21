@@ -99,7 +99,7 @@ export const SurveyResultsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Link to={`/admin/surveys/${surveyId}`} className="text-purple-600 hover:text-purple-700">
@@ -116,7 +116,7 @@ export const SurveyResultsPage = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow p-8 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-8 mb-6">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
@@ -174,13 +174,13 @@ export const SurveyResultsPage = () => {
 
         {viewMode === 'submissions' ? (
           submissions.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-8 text-center">
+            <div className="bg-white rounded-lg shadow-sm p-8 text-center">
               <p className="text-gray-600">No submissions yet.</p>
             </div>
           ) : (
             <div className="space-y-6">
               {submissions.map((submission) => (
-                <div key={submission.id} className="bg-white rounded-lg shadow p-6">
+                <div key={submission.id} className="bg-white rounded-lg shadow-sm p-6">
                   <div className="flex justify-between items-start mb-4 pb-4 border-b">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">
@@ -228,20 +228,20 @@ export const SurveyResultsPage = () => {
           )
         ) : viewMode === 'byQuestion' ? (
           responsesByQuestion.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-8 text-center">
+            <div className="bg-white rounded-lg shadow-sm p-8 text-center">
               <p className="text-gray-600">No responses yet.</p>
             </div>
           ) : (
             <div className="space-y-6">
               {responsesByQuestion.map((group) => {
                 return (
-                  <div key={group.question_id} className="bg-white rounded-lg shadow p-6">
+                  <div key={group.question_id} className="bg-white rounded-lg shadow-sm p-6">
                     <div className="mb-4 pb-4 border-b">
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">
                         {group.question_text}
                       </h3>
                       <div className="flex gap-4 text-sm text-gray-500">
-                        <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded">
+                        <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-sm">
                           {group.question_type}
                         </span>
                         <span>
@@ -311,11 +311,11 @@ export const SurveyResultsPage = () => {
           )
         ) : (
           responses.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-8 text-center">
+            <div className="bg-white rounded-lg shadow-sm p-8 text-center">
               <p className="text-gray-600">No responses yet.</p>
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
