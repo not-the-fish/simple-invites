@@ -47,7 +47,7 @@ export const SurveyDetailPage = () => {
     try {
       await adminApi.deleteSurvey(Number(surveyId))
       navigate('/admin/dashboard')
-    } catch (err: unknown) {
+    } catch {
       setError('Failed to delete survey')
     }
   }

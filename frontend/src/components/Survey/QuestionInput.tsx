@@ -312,7 +312,7 @@ export const QuestionInput = ({
   if (questionType === 'matrix' && options) {
     // For matrix questions, options contains rows and columns
     // Parse the matrix configuration
-    let rows: string[] = []
+    let rows: string[]
     let columns: string[] = []
     
     try {
@@ -414,7 +414,7 @@ export const QuestionInput = ({
   if (questionType === 'matrix_single' && options) {
     // For matrix_single questions, options contains rows and columns
     // Parse the matrix configuration
-    let rows: string[] = []
+    let rows: string[]
     let columns: string[] = []
     
     try {

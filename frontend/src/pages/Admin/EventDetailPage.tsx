@@ -47,7 +47,7 @@ export const EventDetailPage = () => {
     try {
       await adminApi.deleteEvent(Number(eventId))
       navigate('/admin/dashboard')
-    } catch (err: unknown) {
+    } catch {
       setError('Failed to delete event')
     }
   }

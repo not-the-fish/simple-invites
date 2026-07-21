@@ -90,7 +90,7 @@ export const EventFormPage = () => {
         survey_questions: [],
       })
       setSurveyMode(event.survey_id ? 'existing' : 'none')
-    } catch (err: unknown) {
+    } catch {
       setError('Failed to load event')
     }
   }, [eventId])
