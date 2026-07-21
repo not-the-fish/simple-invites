@@ -86,7 +86,7 @@ export const EventDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Link to="/admin/dashboard" className="text-purple-600 hover:text-purple-700">
@@ -123,7 +123,7 @@ export const EventDetailPage = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow p-8">
+        <div className="bg-white rounded-lg shadow-sm p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">{event.title}</h1>
 
           {event.description && (
@@ -156,12 +156,12 @@ export const EventDetailPage = () => {
             <div>
               <span className="font-medium text-gray-700">Invitation Token:</span>
               <div className="flex items-center gap-2 mt-1">
-                <code className="px-3 py-1 bg-gray-100 rounded text-sm font-mono">
+                <code className="px-3 py-1 bg-gray-100 rounded-sm text-sm font-mono">
                   {event.invitation_token}
                 </code>
                 <button
                   onClick={copyInvitationLink}
-                  className="px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors"
+                  className="px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded-sm hover:bg-purple-200 transition-colors"
                 >
                   Copy Link
                 </button>
@@ -179,7 +179,7 @@ export const EventDetailPage = () => {
           <div className="border-t pt-6">
             <Link
               to={`/admin/events/${eventId}/rsvps`}
-              className="inline-block px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
+              className="inline-block px-6 py-3 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
             >
               View RSVPs
             </Link>

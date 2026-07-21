@@ -336,7 +336,7 @@ export const RSVPFlow = () => {
 
   if (state.loading && state.currentStep === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-purple-50 to-pink-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading event...</p>
@@ -347,14 +347,14 @@ export const RSVPFlow = () => {
 
   if (state.error && state.currentStep === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <div className="text-6xl mb-4">😔</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h2>
           <p className="text-gray-600 mb-6">{state.error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
+            className="px-6 py-3 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
           >
             Try Again
           </button>
@@ -530,7 +530,7 @@ export const RSVPFlow = () => {
 
         {state.currentStep === getTotalSteps() && (
           <Transition key="confirmation">
-            <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
+            <div className="min-h-screen bg-linear-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
               <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
                 <div className="text-6xl mb-4">🎉</div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">You're all set!</h2>
@@ -555,7 +555,7 @@ export const RSVPFlow = () => {
                         })}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center px-3 py-1.5 text-sm bg-white border-2 border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transition-all font-medium shadow-sm"
+                        className="inline-flex items-center justify-center px-3 py-1.5 text-sm bg-white border-2 border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transition-all font-medium shadow-xs"
                       >
                         <svg
                           className="w-4 h-4 mr-1.5"
@@ -580,7 +580,7 @@ export const RSVPFlow = () => {
                               location: state.event!.location,
                             })
                           }}
-                          className="inline-flex items-center justify-center px-3 py-1.5 text-sm bg-white border-2 border-gray-500 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium shadow-sm"
+                          className="inline-flex items-center justify-center px-3 py-1.5 text-sm bg-white border-2 border-gray-500 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium shadow-xs"
                         >
                           <svg
                             className="w-4 h-4 mr-1.5"
@@ -608,7 +608,7 @@ export const RSVPFlow = () => {
                             location: state.event!.location,
                           })
                         }}
-                        className="inline-flex items-center justify-center px-3 py-1.5 text-sm bg-white border-2 border-purple-500 text-purple-600 rounded-lg hover:bg-purple-50 transition-all font-medium shadow-sm"
+                        className="inline-flex items-center justify-center px-3 py-1.5 text-sm bg-white border-2 border-purple-500 text-purple-600 rounded-lg hover:bg-purple-50 transition-all font-medium shadow-xs"
                       >
                         <svg
                           className="w-4 h-4 mr-1.5"
@@ -634,7 +634,7 @@ export const RSVPFlow = () => {
                           // This ensures a full page reload and resets to landing view
                           window.location.href = `/rsvp/${invitationToken}`
                         }}
-                        className="inline-block px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium shadow-md"
+                        className="inline-block px-6 py-3 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium shadow-md"
                       >
                         View Event Details
                       </button>

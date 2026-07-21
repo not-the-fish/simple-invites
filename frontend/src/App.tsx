@@ -48,7 +48,7 @@ function App() {
                 </p>
                 <a
                   href="/admin/login"
-                  className="inline-block px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
+                  className="inline-block px-6 py-3 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
                 >
                   Admin Login
                 </a>

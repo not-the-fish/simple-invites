@@ -90,7 +90,7 @@ export const RSVPsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link to="/admin/dashboard" className="text-purple-600 hover:text-purple-700">
             ← Back to Dashboard
@@ -110,15 +110,15 @@ export const RSVPsPage = () => {
 
           {/* Summary Cards */}
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-white rounded-lg shadow p-4">
+            <div className="bg-white rounded-lg shadow-sm p-4">
               <div className="text-sm text-gray-600">Total RSVPs</div>
               <div className="text-2xl font-bold text-gray-900">{rsvps.length}</div>
             </div>
-            <div className="bg-green-50 rounded-lg shadow p-4">
+            <div className="bg-green-50 rounded-lg shadow-sm p-4">
               <div className="text-sm text-green-600">Yes</div>
               <div className="text-2xl font-bold text-green-900">{responseCounts.yes}</div>
             </div>
-            <div className="bg-yellow-50 rounded-lg shadow p-4">
+            <div className="bg-yellow-50 rounded-lg shadow-sm p-4">
               <div className="text-sm text-yellow-600">Maybe</div>
               <div className="text-2xl font-bold text-yellow-900">{responseCounts.maybe}</div>
             </div>
@@ -126,11 +126,11 @@ export const RSVPsPage = () => {
         </div>
 
         {rsvps.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-8 text-center">
+          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
             <p className="text-gray-600">No RSVPs yet for this event.</p>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>

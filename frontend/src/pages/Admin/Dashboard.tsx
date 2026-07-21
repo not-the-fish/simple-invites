@@ -74,7 +74,7 @@ export const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
@@ -102,18 +102,18 @@ export const Dashboard = () => {
             <h2 className="text-xl font-semibold text-gray-900">Events</h2>
             <Link
               to="/admin/events/new"
-              className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
+              className="px-4 py-2 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
             >
               + Create Event
             </Link>
           </div>
 
           {events.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-8 text-center">
+            <div className="bg-white rounded-lg shadow-sm p-8 text-center">
               <p className="text-gray-600 mb-4">No events yet.</p>
               <Link
                 to="/admin/events/new"
-                className="inline-block px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
+                className="inline-block px-4 py-2 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
               >
                 Create your first event
               </Link>
@@ -121,7 +121,7 @@ export const Dashboard = () => {
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {events.map((event) => (
-                <div key={event.id} className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
+                <div key={event.id} className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow">
                   <div className="p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{event.title}</h3>
                     {event.description && (
@@ -170,18 +170,18 @@ export const Dashboard = () => {
             <h2 className="text-xl font-semibold text-gray-900">Surveys</h2>
             <Link
               to="/admin/surveys/new"
-              className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
+              className="px-4 py-2 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
             >
               + Create Survey
             </Link>
           </div>
 
           {surveys.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-8 text-center">
+            <div className="bg-white rounded-lg shadow-sm p-8 text-center">
               <p className="text-gray-600 mb-4">No surveys yet.</p>
               <Link
                 to="/admin/surveys/new"
-                className="inline-block px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
+                className="inline-block px-4 py-2 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
               >
                 Create your first survey
               </Link>
@@ -189,7 +189,7 @@ export const Dashboard = () => {
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {surveys.map((survey) => (
-                <div key={survey.id} className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
+                <div key={survey.id} className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow">
                   <div className="p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{survey.title}</h3>
                     {survey.description && (

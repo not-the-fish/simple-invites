@@ -238,7 +238,7 @@ export const EventFormPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link to="/admin/dashboard" className="text-purple-600 hover:text-purple-700">
             ← Back to Dashboard
@@ -247,7 +247,7 @@ export const EventFormPage = () => {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow p-8">
+        <div className="bg-white rounded-lg shadow-sm p-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">
             {isEdit ? 'Edit Event' : cloneFrom ? 'Clone Event' : 'Create New Event'}
           </h1>
@@ -328,7 +328,7 @@ export const EventFormPage = () => {
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
               />
             </div>
 
@@ -341,7 +341,7 @@ export const EventFormPage = () => {
                 value={formData.description || ''}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={8}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none font-mono text-sm"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden font-mono text-sm"
                 placeholder={`Enter event description with Markdown formatting:
 
 **Bold text** or __bold text__
@@ -381,7 +381,7 @@ Line breaks are preserved`}
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
               />
               <p className="mt-1 text-xs text-gray-500">
                 Timezone: {getTimezoneAbbreviation()} ({getUserTimezone()})
@@ -397,7 +397,7 @@ Line breaks are preserved`}
                 type="text"
                 value={formData.location || ''}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
               />
             </div>
 
@@ -411,7 +411,7 @@ Line breaks are preserved`}
                 value={formData.access_code || ''}
                 onChange={(e) => setFormData({ ...formData, access_code: e.target.value })}
                 placeholder="Leave empty for public event"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
               />
               <p className="mt-1 text-sm text-gray-500">
                 If set, attendees will need this code to RSVP
@@ -431,7 +431,7 @@ Line breaks are preserved`}
                 type="button"
                 id="show_rsvp_list"
                 onClick={() => setFormData({ ...formData, show_rsvp_list: !formData.show_rsvp_list })}
-                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
                   formData.show_rsvp_list ? 'bg-purple-600' : 'bg-gray-200'
                 }`}
               >
@@ -501,7 +501,7 @@ Line breaks are preserved`}
                     id="survey_id"
                     value={formData.survey_id || ''}
                     onChange={(e) => setFormData({ ...formData, survey_id: e.target.value ? Number(e.target.value) : null })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
                   >
                     <option value="">Select a survey...</option>
                     {surveys.map((survey) => (
@@ -524,7 +524,7 @@ Line breaks are preserved`}
                       value={formData.survey_description || ''}
                       onChange={(e) => setFormData({ ...formData, survey_description: e.target.value })}
                       rows={3}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
                       placeholder="Optional description for the survey"
                     />
                   </div>
@@ -547,7 +547,7 @@ Line breaks are preserved`}
               <button
                 type="submit"
                 disabled={loading || cloneLoading}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-6 py-3 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Saving...' : cloneLoading ? 'Loading...' : isEdit ? 'Update Event' : 'Create Event'}
               </button>

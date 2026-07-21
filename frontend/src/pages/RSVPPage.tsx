@@ -109,7 +109,7 @@ export const RSVPPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-xs">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">{stats.event_title}</h1>
           {stats.event_description && (
@@ -139,7 +139,7 @@ export const RSVPPage = () => {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Event Details */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Event Details</h2>
             <div className="space-y-3">
               <div>
@@ -158,7 +158,7 @@ export const RSVPPage = () => {
           </div>
 
           {/* RSVP Statistics */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">RSVP Status</h2>
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="text-center">
@@ -182,7 +182,7 @@ export const RSVPPage = () => {
 
           {/* Guest List (when enabled) */}
           {stats.show_rsvp_list && stats.attendees && (
-            <div className="bg-white rounded-lg shadow p-6 md:col-span-2">
+            <div className="bg-white rounded-lg shadow-sm p-6 md:col-span-2">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Who's Coming</h2>
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Attending */}
@@ -230,7 +230,7 @@ export const RSVPPage = () => {
         </div>
 
         {/* RSVP Action */}
-        <div className="mt-8 bg-white rounded-lg shadow p-6">
+        <div className="mt-8 bg-white rounded-lg shadow-sm p-6">
           <div className="text-center">
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               Ready to RSVP?
@@ -240,7 +240,7 @@ export const RSVPPage = () => {
             </p>
             <button
               onClick={handleStartRSVP}
-              className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-lg font-medium rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl"
+              className="inline-flex items-center px-8 py-3 bg-linear-to-r from-purple-500 to-pink-500 text-white text-lg font-medium rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl"
             >
               RSVP
             </button>

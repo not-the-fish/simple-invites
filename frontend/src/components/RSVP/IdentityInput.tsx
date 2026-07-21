@@ -26,7 +26,7 @@ export const IdentityInput = ({ value, onChange, showPublicWarning = false }: Id
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Enter your name or alias"
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden transition-all"
         required
       />
     </div>

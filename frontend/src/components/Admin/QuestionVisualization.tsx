@@ -163,7 +163,7 @@ export const QuestionVisualization = ({ group, questionType }: QuestionVisualiza
                 type="checkbox"
                 checked={hideSkipped}
                 onChange={(e) => setHideSkipped(e.target.checked)}
-                className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                className="rounded-sm border-gray-300 text-purple-600 focus:ring-purple-500"
               />
               Hide skipped
             </label>

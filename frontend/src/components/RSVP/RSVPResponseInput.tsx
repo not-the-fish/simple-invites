@@ -66,7 +66,7 @@ export const RSVPResponseInput = ({ value, numAttendees, onChange, onNumAttendee
               onNumAttendeesChange(val && val > 0 ? val : null)
             }}
             required={value === 'yes'}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-hidden"
             placeholder="1"
           />
           <p className="mt-2 text-xs text-gray-600">
