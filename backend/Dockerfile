@@ -15,6 +15,7 @@ RUN uv pip install --system \
     pydantic-settings \
     passlib[bcrypt] \
     python-jose[cryptography] \
+    "psycopg[binary]" \
     psycopg2-binary \
     python-dotenv \
     email-validator \
