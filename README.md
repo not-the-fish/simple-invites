@@ -69,6 +69,9 @@ simple-invites/
 - `CORS_ORIGINS`: Comma-separated list of allowed CORS origins
 - `ENVIRONMENT`: `development`, `production`, or `testing`
 - `APP_NAME`: Application name displayed in UI and API docs (default: "Simple Invites")
+- `PUBLIC_APP_URL`: Public frontend base URL for RSVP links and Open Graph (`og:url`)
+- `APP_TIMEZONE`: Timezone for formatting dates in messaging link previews (default: `UTC`)
+- `SPA_INDEX_HTML` / `SPA_INDEX_URL`: Built SPA `index.html` path or URL so `/rsvp/{token}` can inject Open Graph meta (Docker Compose uses `SPA_INDEX_URL=http://frontend/index.html`)
 
 **Optional - Email Notifications:**
 - `SMTP_EMAIL`: Gmail address for sending RSVP confirmations
@@ -78,6 +81,8 @@ simple-invites/
 #### Frontend
 - `VITE_API_BASE_URL`: Backend API URL (default: `http://localhost:8000`)
 - `VITE_APP_NAME`: Application name displayed in UI (default: "Simple Invites")
+- `BACKEND_URL`: (nginx/Docker) Backend origin for proxying `/rsvp/` (e.g. `http://backend:8000`)
+- `PORT`: (nginx/Docker) Listen port (default in Compose: `80`)
 
 ### Custom Branding
 

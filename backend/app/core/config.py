@@ -149,6 +149,24 @@ class Settings(BaseSettings):
         description="Application name displayed in UI, API docs, and emails.",
     )
 
+    # Public app URL and link-preview settings
+    PUBLIC_APP_URL: str = Field(
+        default="https://app.erikasalomon.events",
+        description="Public frontend base URL used for og:url and RSVP edit links.",
+    )
+    APP_TIMEZONE: str = Field(
+        default="UTC",
+        description="Timezone for formatting event dates in link previews (e.g. America/Chicago).",
+    )
+    SPA_INDEX_HTML: str | None = Field(
+        default=None,
+        description="Path to the built SPA index.html used for Open Graph meta injection.",
+    )
+    SPA_INDEX_URL: str | None = Field(
+        default=None,
+        description="HTTP URL to fetch SPA index.html when SPA_INDEX_HTML is unset (e.g. http://frontend/index.html).",
+    )
+
     # Email (optional - only required in production for RSVP confirmations)
     SMTP_EMAIL: str | None = Field(
         default=None,

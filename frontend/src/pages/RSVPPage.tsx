@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
 import { eventsApi } from '../services/events'
 import { RSVPFlow } from '../components/RSVP/RSVPFlow'
 import ReactMarkdown from 'react-markdown'
 import { getErrorMessage } from '../utils/retry'
 import { formatDateWithTimezone } from '../utils/timezone'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 type Attendee = {
   name: string
@@ -41,6 +42,12 @@ export const RSVPPage = () => {
   const [stats, setStats] = useState<RSVPStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const pageTitle = useMemo(() => {
+    if (!stats) return null
+    return `${stats.event_title} · ${formatDateWithTimezone(stats.event_date)}`
+  }, [stats])
+  useDocumentTitle(pageTitle)
 
   const loadStats = useCallback(async () => {
     if (!invitationToken) return
