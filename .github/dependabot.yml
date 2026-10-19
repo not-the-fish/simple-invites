@@ -26,13 +26,13 @@ updates:
       prefix: "chore"
       include: "scope"
 
-  # GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-    labels:
-      - "dependencies"
-      - "github-actions"
+  # GitHub Actions — re-enable when workflows exist under .github/workflows/
+  # - package-ecosystem: "github-actions"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "monthly"
+  #   labels:
+  #     - "dependencies"
+  #     - "github-actions"
 
 
