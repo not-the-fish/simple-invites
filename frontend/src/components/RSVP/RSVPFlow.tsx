@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { eventsApi } from '../../services/events'
@@ -17,6 +17,7 @@ import { Transition } from '../Shared/Transition'
 import { QuestionInput } from '../Survey/QuestionInput'
 import { downloadCalendarFile, getGoogleCalendarUrl, isAppleDevice } from '../../utils/calendar'
 import { formatDateWithTimezone } from '../../utils/timezone'
+import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import type { RSVPFlowState, RSVPResponse } from '../../types/rsvp'
 import type { Question } from '../../types/survey'
 
@@ -54,6 +55,12 @@ export const RSVPFlow = () => {
     submissionId: null,
     previousIdentity: null,
   })
+
+  const pageTitle = useMemo(() => {
+    if (!state.event) return null
+    return `${state.event.title} · ${formatDateWithTimezone(state.event.date)}`
+  }, [state.event])
+  useDocumentTitle(pageTitle)
 
   useEffect(() => {
     const loadEvent = async () => {

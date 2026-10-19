@@ -9,6 +9,7 @@ from app.services.email_service import (
 )
 
 from app.api.surveys import _validate_answer
+from app.core.config import settings
 from app.core.security import (
     generate_edit_token,
     get_edit_token_hash,
@@ -345,7 +346,8 @@ async def submit_rsvp(
     # Send confirmation email if email was provided
     if rsvp_data.email:
         # Build edit URL with token in fragment (not sent to server for privacy)
-        edit_url = f"https://app.erikasalomon.events/rsvp/{invitation_token}#edit={edit_token}"
+        base_url = settings.PUBLIC_APP_URL.rstrip("/")
+        edit_url = f"{base_url}/rsvp/{invitation_token}#edit={edit_token}"
         
         background_tasks.add_task(
             send_rsvp_confirmation,

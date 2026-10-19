@@ -27,6 +27,9 @@ services:
       CORS_ORIGINS: http://localhost:3000,http://localhost:5173
       ENVIRONMENT: development
       APP_NAME: Simple Invites
+      PUBLIC_APP_URL: http://localhost:3000
+      APP_TIMEZONE: UTC
+      SPA_INDEX_URL: http://frontend/index.html
     depends_on:
       db:
         condition: service_healthy
@@ -43,6 +46,8 @@ services:
     depends_on:
       - backend
     environment:
+      PORT: 80
+      BACKEND_URL: http://backend:8000
       VITE_API_BASE_URL: http://localhost:8000
       VITE_APP_NAME: Simple Invites
 

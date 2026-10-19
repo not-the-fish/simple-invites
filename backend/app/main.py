@@ -17,7 +17,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
 
-from app.api import admin, admin_events, admin_surveys, events, surveys
+from app.api import admin, admin_events, admin_surveys, events, rsvp_page, surveys
 from app.core.config import settings
 from app.core.constants import MAX_REQUEST_SIZE_BYTES
 from app.core.security import rate_limiter
@@ -441,6 +441,7 @@ app.include_router(events.router)
 app.include_router(admin_events.router)
 app.include_router(surveys.router)
 app.include_router(admin_surveys.router)
+app.include_router(rsvp_page.router)
 
 
 @app.get("/")
